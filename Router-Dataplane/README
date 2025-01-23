@@ -1,0 +1,14 @@
+Mai intai verific daca pachetul e te tip ip. Vad daca adresa destinatie e ip-ul meu si daca da, trimit un pachet icmp in care pun datele conform cerintei.In caz contrar, daca nu intra in cazuri
+"problema", ii scad ttl-ul si il trimit catre cea mai buna ruta folosind get_best_route care se foloseste de trie pentru cautare eficienta. Trie este folosit pentru a stoca și căuta intrările
+într-o tabelă de rutare bazată pe adrese IP și măști asociate. Fiecare nod din trie reprezintă o secvență de biți din adresa IP, iar fiecare muchie poate fi 0 sau 1, corespunzând bitului asociat 
+din adresa IP.
+Daca nu exista best route, creez un packet in care pun datele conform cerintei, pe care il trimit inapoi. Daca ttl <=1 fac aceeasi chestie.
+Daca nu exista arp entry pentru next_hop, atunci il pun intr-o coada si trimit un arp request pentru a afla ardresa mac a acestuia.
+Daca pachetul primit este un arp request, il trimit inapoi conform cerintei.
+Daca este un arp reply, o coadă auxiliară (aux_queue) este inițializată pentru a stoca pachetele care trebuie retransmise.
+Se extrage fiecare pachet din coada principală (coada) pentru a fi procesat.
+Pentru fiecare pachet, se calculează dimensiunea acestuia și se identifică cea mai bună rută către adresa IP de destinație.
+Se verifică dacă există o intrare în tabela ARP pentru următorul hop al pachetului.
+Dacă nu există o intrare în tabela ARP, pachetul este pus în coada aux_queue pentru a fi retransmis ulterior.
+În caz contrar, adresa MAC a următorului hop este adăugată în header-ul Ethernet al pachetului, iar acesta este trimis înapoi pe interfața corespunzătoare.
+La finalul while-ului, coada principală (coada) este actualizată cu coada aux_queue, care conține pachetele care trebuie retransmise.
